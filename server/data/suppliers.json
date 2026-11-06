@@ -1,0 +1,46 @@
+[
+  {
+    "id": "supplier-001",
+    "companyName": "Mekong Circuit Works",
+    "industryTags": ["electronics", "manufacturing"],
+    "services": ["contract manufacturing", "pcb assembly", "sourcing"],
+    "businessModel": "B2B",
+    "capacity": "medium",
+    "location": "Ho Chi Minh City, Vietnam",
+    "certifications": ["ISO 9001"],
+    "description": "Electronics manufacturing partner for growing product teams."
+  },
+  {
+    "id": "supplier-002",
+    "companyName": "GreenRoute Logistics",
+    "industryTags": ["logistics", "sustainability"],
+    "services": ["freight forwarding", "warehousing", "customs support"],
+    "businessModel": "B2B",
+    "capacity": "large",
+    "location": "Da Nang, Vietnam",
+    "certifications": ["ISO 14001"],
+    "description": "Regional logistics and warehousing for sustainable supply chains."
+  },
+  {
+    "id": "supplier-003",
+    "companyName": "Northstar Product Lab",
+    "industryTags": ["product development", "electronics"],
+    "services": ["product design", "prototyping", "research and development"],
+    "businessModel": "B2B",
+    "capacity": "small",
+    "location": "Hanoi, Vietnam",
+    "certifications": [],
+    "description": "Product design and prototyping studio for early-stage concepts."
+  },
+  {
+    "id": "supplier-004",
+    "companyName": "Aster Components",
+    "industryTags": ["manufacturing", "industrial"],
+    "services": ["component sourcing", "quality inspection"],
+    "businessModel": "B2B",
+    "capacity": "medium",
+    "location": "Binh Duong, Vietnam",
+    "certifications": null,
+    "description": "Component sourcing and inspection for industrial buyers."
+  }
+]

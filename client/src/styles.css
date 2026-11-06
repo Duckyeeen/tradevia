@@ -1,0 +1,106 @@
+:root {
+  font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif;
+  color: #172b27;
+  background: #f5f7f4;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --green: #146b52;
+  --green-dark: #0c493a;
+  --muted: #788984;
+  --line: #e4eae5;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+.page-shell { max-width: 1240px; margin: 0 auto; padding: 0 56px; }
+.topbar { height: 88px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.brand { display: inline-flex; align-items: center; gap: 11px; color: var(--green-dark); font: 800 17px 'Avenir Next', Avenir, 'Segoe UI', sans-serif; letter-spacing: .075em; }
+.brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px 11px 11px 3px; background: var(--green); color: white; font: 800 19px 'Avenir Next', Avenir, 'Segoe UI', sans-serif; letter-spacing: 0; }
+.environment, .phase-pill { display: inline-flex; align-items: center; gap: 8px; color: #60716b; font-size: 12px; font-weight: 600; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #56a77f; box-shadow: 0 0 0 3px #e2f1e8; }
+.hero { display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 34px; min-height: 430px; padding: 42px 0 32px; }
+.eyebrow { margin: 0 0 15px; color: var(--green); font-size: 10px; font-weight: 700; letter-spacing: .16em; }
+h1, h2, h3, p { margin-top: 0; }
+h1 { margin-bottom: 18px; font: 800 clamp(34px, 4.1vw, 51px)/1.13 'Avenir Next', Avenir, 'Segoe UI', sans-serif; letter-spacing: -.055em; }
+h1 span { color: var(--green); }
+.intro { max-width: 490px; margin-bottom: 24px; color: #65756f; font-size: 14px; line-height: 1.8; }
+.hero-note { display: flex; align-items: center; gap: 11px; color: #45645a; font-size: 12px; font-weight: 600; }
+.note-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: #e3f0e8; color: var(--green); font-size: 16px; }
+.hero-art { position: relative; height: 340px; overflow: hidden; border: 1px solid #e5ebe5; border-radius: 24px; background: radial-gradient(circle at 50% 48%, #edf4ee 0, #f1f5f1 44%, #eaf1eb 100%); }
+.orbit { position: absolute; left: 50%; top: 50%; border: 1px solid rgba(20, 107, 82, .13); border-radius: 50%; transform: translate(-50%, -50%); }
+.orbit-one { width: 190px; height: 190px; }
+.orbit-two { width: 280px; height: 280px; }
+.orbit-three { width: 380px; height: 380px; }
+.hub { position: absolute; left: 50%; top: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 92px; height: 92px; border: 5px solid rgba(255,255,255,.72); border-radius: 28px; background: var(--green); color: #fff; box-shadow: 0 14px 35px rgba(21, 92, 70, .24); transform: translate(-50%, -50%) rotate(-5deg); }
+.hub span { font: 800 33px 'Avenir Next', Avenir, 'Segoe UI', sans-serif; line-height: 1; }
+.hub small { margin-top: 5px; font-size: 7px; font-weight: 700; letter-spacing: .13em; }
+.node { position: absolute; z-index: 1; padding: 10px 14px; border: 1px solid #e2eae3; border-radius: 11px; background: rgba(255,255,255,.92); box-shadow: 0 8px 20px rgba(37, 69, 55, .06); color: #3c5b50; font-size: 11px; font-weight: 700; }
+.node-top { left: 50%; top: 27px; transform: translateX(-50%); }
+.node-right { right: 18px; top: 50%; transform: translateY(-50%); }
+.node-bottom { left: 50%; bottom: 27px; transform: translateX(-50%); }
+.node-left { left: 18px; top: 50%; transform: translateY(-50%); }
+.spark { position: absolute; color: #81b397; }
+.spark-one { left: 23%; top: 24%; font-size: 18px; }
+.spark-two { right: 24%; bottom: 21%; font-size: 13px; }
+.workspace { padding: 23px 0 35px; border-top: 1px solid var(--line); }
+.section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 19px; }
+.section-heading .eyebrow { margin-bottom: 7px; font-size: 9px; }
+h2 { margin-bottom: 0; font: 700 20px 'Manrope', sans-serif; letter-spacing: -.035em; }
+.phase-pill { padding: 8px 11px; border: 1px solid #e2e9e3; border-radius: 20px; background: #fff; font-size: 10px; }
+.workstream-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.workstream-card { min-height: 126px; display: flex; flex-direction: column; justify-content: space-between; padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.card-number { color: #9ba9a3; font: 600 10px 'Avenir Next', Avenir, 'Segoe UI', sans-serif; letter-spacing: .1em; }
+.workstream-card h3 { margin: 0 0 5px; color: #263d35; font: 700 13px 'Avenir Next', Avenir, 'Segoe UI', sans-serif; }
+.workstream-card p { margin: 0; color: var(--muted); font-size: 10px; }
+.card-status { align-self: flex-start; padding: 5px 8px; border-radius: 6px; background: #f1f5f1; color: #6e8177; font-size: 9px; font-weight: 600; }
+.footer { min-height: 56px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); color: #82908b; font-size: 10px; }
+.footer-separator { padding: 0 5px; color: #bac4be; }
+
+@media (max-width: 800px) {
+  .page-shell { padding: 0 25px; }
+  .hero { grid-template-columns: 1fr; gap: 20px; padding-top: 45px; }
+  .hero-art { height: 290px; }
+  .workstream-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .page-shell { padding: 0 18px; }
+  .topbar { height: 70px; }
+  .environment { font-size: 10px; }
+  .hero { min-height: auto; padding: 39px 0 26px; }
+  h1 { font-size: 35px; }
+  .intro { font-size: 13px; }
+  .hero-art { height: 250px; }
+  .section-heading { align-items: flex-start; gap: 10px; flex-direction: column; }
+  .workstream-grid { gap: 9px; }
+  .workstream-card { min-height: 120px; padding: 12px; }
+  .workstream-card h3 { font-size: 12px; }
+  .footer { align-items: flex-start; justify-content: center; flex-direction: column; gap: 5px; padding: 13px 0; }
+}
+
+/* UI Modules & Navigation Styles */
+.nav-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 14px 0; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.tab-btn { padding: 9px 16px; border-radius: 8px; border: 1px solid transparent; background: transparent; color: #495e57; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.tab-btn:hover { background: #eef3ef; color: var(--green-dark); }
+.tab-btn.tab-active { background: #e3f0e8; border-color: #bedbc7; color: var(--green-dark); }
+
+.api-banner { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-radius: 10px; margin: 12px 0 20px; font-size: 13px; font-weight: 500; }
+.api-banner.banner-mock { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+.api-banner.banner-live { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+
+.module-container { padding: 8px 0 40px; }
+.module-desc { color: var(--muted); font-size: 13px; margin: -10px 0 20px; }
+
+.card { padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; }
+.btn-primary { background: var(--green); color: #fff; }
+.btn-primary:hover { background: var(--green-dark); }
+.btn-outline { background: #fff; border: 1px solid #d4ded7; color: #263d35; }
+.btn-outline:hover { background: #f4f7f5; border-color: #bccbc1; }
+
+.input-field { width: 100%; padding: 9px 13px; border: 1px solid #d4ded7; border-radius: 8px; font-size: 13px; font-family: inherit; box-sizing: border-box; outline: none; }
+.input-field:focus { border-color: var(--green); box-shadow: 0 0 0 2px #e3f0e8; }
+
+.tag-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid #d4ded7; background: #fff; color: #3c5b50; cursor: pointer; }
+.tag-pill.tag-active { background: #e3f0e8; border-color: var(--green); color: var(--green-dark); font-weight: 600; }

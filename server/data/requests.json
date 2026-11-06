@@ -1,0 +1,14 @@
+[
+  {
+    "id": "request-001",
+    "buyerId": "buyer-001",
+    "title": "Find an electronics manufacturing partner",
+    "description": "Looking for a partner for a mid-volume connected device launch.",
+    "industryTags": ["electronics", "manufacturing"],
+    "requiredServices": ["contract manufacturing", "pcb assembly"],
+    "desiredCapacity": "medium",
+    "location": "Vietnam",
+    "complianceRequirements": ["ISO 9001"],
+    "businessModel": "B2B"
+  }
+]
