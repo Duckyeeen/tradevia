@@ -1,9 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dirname, '..', '..', 'data');
+const getDataDir = () => process.env.TRADEVIA_DATA_DIR
+  ? resolve(process.env.TRADEVIA_DATA_DIR)
+  : join(__dirname, '..', '..', 'data');
 
 /**
  * Đọc file JSON từ thư mục data/.
@@ -11,7 +13,7 @@ const DATA_DIR = join(__dirname, '..', '..', 'data');
  * @returns {Promise<any>}
  */
 export async function readJSON(filename) {
-  const filePath = join(DATA_DIR, filename);
+  const filePath = join(getDataDir(), filename);
   const raw = await readFile(filePath, 'utf-8');
   return JSON.parse(raw);
 }
@@ -22,7 +24,7 @@ export async function readJSON(filename) {
  * @param {any} data — dữ liệu cần ghi
  */
 export async function writeJSON(filename, data) {
-  const filePath = join(DATA_DIR, filename);
+  const filePath = join(getDataDir(), filename);
   await writeFile(filePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
 

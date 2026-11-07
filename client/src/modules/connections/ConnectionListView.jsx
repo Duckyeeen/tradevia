@@ -4,12 +4,14 @@ import { getConnections } from '../../services/api.js';
 export default function ConnectionListView() {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setLoading(true);
+    setError('');
     getConnections()
       .then((data) => setConnections(data))
-      .catch((err) => console.error(err))
+      .catch((err) => setError(err.userMessage || err.message || 'Không thể tải danh sách kết nối.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -17,6 +19,8 @@ export default function ConnectionListView() {
     <div className="module-container">
       <h2>Quản lý Kết nối (Connections)</h2>
       <p className="module-desc">Phụ trách: Thành viên 5 · Nhánh: <code>feature/matching-connection</code></p>
+
+      {error && <div className="card" role="alert"><p>{error}</p></div>}
 
       {loading ? (
         <p>Đang tải danh sách kết nối...</p>

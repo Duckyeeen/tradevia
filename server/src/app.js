@@ -3,7 +3,6 @@ import { readJSON, writeJSON } from './utils/storage.js';
 import { matchSuppliers } from './services/matchingService.js';
 
 const app = express();
-const port = Number(process.env.PORT) || 3000;
 
 app.disable('x-powered-by');
 app.use(express.json());
@@ -76,12 +75,37 @@ app.get('/api/requests', async (_req, res) => {
 app.post('/api/requests', async (req, res) => {
   try {
     const body = req.body;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return res.status(400).json({ error: 'Request body must be a JSON object' });
+    }
 
-    // Validate các trường bắt buộc
-    const required = ['title', 'industryTags', 'requiredServices', 'desiredCapacity', 'businessModel'];
+    const required = ['buyerId', 'title', 'industryTags', 'requiredServices', 'desiredCapacity', 'businessModel'];
     const missing = required.filter((key) => body[key] === undefined || body[key] === null || body[key] === '');
     if (missing.length > 0) {
       return res.status(400).json({ error: 'Missing required fields', fields: missing });
+    }
+
+    const invalid = [];
+    for (const key of ['buyerId', 'title', 'desiredCapacity', 'businessModel']) {
+      if (typeof body[key] !== 'string' || body[key].trim() === '') invalid.push(key);
+    }
+    for (const key of ['industryTags', 'requiredServices']) {
+      if (!Array.isArray(body[key]) || body[key].length === 0 || body[key].some((item) => typeof item !== 'string' || item.trim() === '')) {
+        invalid.push(key);
+      }
+    }
+    if (body.description !== undefined && typeof body.description !== 'string') invalid.push('description');
+    if (body.location !== undefined && typeof body.location !== 'string') invalid.push('location');
+    if (body.complianceRequirements !== undefined && (!Array.isArray(body.complianceRequirements)
+      || body.complianceRequirements.some((item) => typeof item !== 'string' || item.trim() === ''))) {
+      invalid.push('complianceRequirements');
+    }
+    const capacity = typeof body.desiredCapacity === 'string' ? body.desiredCapacity.trim().toLowerCase() : '';
+    if (capacity && !['small', 'medium', 'large'].includes(capacity)) invalid.push('desiredCapacity');
+    const businessModel = typeof body.businessModel === 'string' ? body.businessModel.trim().toUpperCase() : '';
+    if (businessModel && !['B2B', 'B2C', 'B2B2C'].includes(businessModel)) invalid.push('businessModel');
+    if (invalid.length > 0) {
+      return res.status(400).json({ error: 'Invalid request fields', fields: [...new Set(invalid)] });
     }
 
     const requests = await readJSON('requests.json');
@@ -95,15 +119,15 @@ app.post('/api/requests', async (req, res) => {
 
     const newRequest = {
       id: newId,
-      buyerId: body.buyerId || null,
-      title: body.title,
-      description: body.description || '',
-      industryTags: body.industryTags,
-      requiredServices: body.requiredServices,
-      desiredCapacity: body.desiredCapacity,
-      location: body.location || '',
-      complianceRequirements: body.complianceRequirements || [],
-      businessModel: body.businessModel,
+      buyerId: body.buyerId.trim(),
+      title: body.title.trim(),
+      description: body.description?.trim() || '',
+      industryTags: body.industryTags.map((tag) => tag.trim()),
+      requiredServices: body.requiredServices.map((service) => service.trim()),
+      desiredCapacity: capacity,
+      location: body.location?.trim() || '',
+      complianceRequirements: (body.complianceRequirements || []).map((requirement) => requirement.trim()),
+      businessModel,
     };
 
     requests.push(newRequest);
@@ -120,8 +144,8 @@ app.post('/api/requests', async (req, res) => {
 // ────────────────────────────────────────────────────────
 app.post('/api/matching', async (req, res) => {
   try {
-    const { requestId } = req.body;
-    if (!requestId) {
+    const requestId = req.body?.requestId;
+    if (typeof requestId !== 'string' || requestId.trim() === '') {
       return res.status(400).json({ error: 'Missing requestId' });
     }
 
@@ -170,17 +194,28 @@ app.get('/api/connections', async (req, res) => {
 // ────────────────────────────────────────────────────────
 app.post('/api/connections', async (req, res) => {
   try {
-    const { requestId, buyerId, supplierId } = req.body;
+    const { requestId, buyerId, supplierId } = req.body || {};
 
-    // Validate
-    if (!requestId || !buyerId || !supplierId) {
+    if ([requestId, buyerId, supplierId].some((value) => typeof value !== 'string' || value.trim() === '')) {
       return res.status(400).json({ error: 'Missing required fields', fields: ['requestId', 'buyerId', 'supplierId'] });
+    }
+
+    const normalizedRequestId = requestId.trim();
+    const normalizedBuyerId = buyerId.trim();
+    const normalizedSupplierId = supplierId.trim();
+    const [requests, suppliers] = await Promise.all([readJSON('requests.json'), readJSON('suppliers.json')]);
+    const request = requests.find((item) => item.id === normalizedRequestId);
+    if (!request) return res.status(404).json({ error: 'Request not found', requestId: normalizedRequestId });
+    const supplier = suppliers.find((item) => item.id === normalizedSupplierId);
+    if (!supplier) return res.status(404).json({ error: 'Supplier not found', supplierId: normalizedSupplierId });
+    if (request.buyerId !== normalizedBuyerId) {
+      return res.status(400).json({ error: 'Buyer does not own this request', fields: ['buyerId'] });
     }
 
     const connections = await readJSON('connections.json');
 
     // Kiểm tra trùng lặp (cùng requestId + supplierId)
-    const duplicate = connections.find((c) => c.requestId === requestId && c.supplierId === supplierId);
+    const duplicate = connections.find((c) => c.requestId === normalizedRequestId && c.supplierId === normalizedSupplierId);
     if (duplicate) {
       return res.status(409).json({ error: 'Connection already exists', existingId: duplicate.id });
     }
@@ -194,9 +229,9 @@ app.post('/api/connections', async (req, res) => {
 
     const newConnection = {
       id: newId,
-      requestId,
-      buyerId,
-      supplierId,
+      requestId: normalizedRequestId,
+      buyerId: normalizedBuyerId,
+      supplierId: normalizedSupplierId,
       status: 'pending',
       createdAt: new Date().toISOString(),
     };
@@ -210,8 +245,4 @@ app.post('/api/connections', async (req, res) => {
 });
 
 // ────────────────────────────────────────────────────────
-// Start server
-// ────────────────────────────────────────────────────────
-app.listen(port, () => {
-  console.log(`TRADEVIA API listening at http://localhost:${port}`);
-});
+export { app };

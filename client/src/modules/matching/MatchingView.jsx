@@ -1,18 +1,30 @@
 import { useState } from 'react';
-import { runMatching, createConnection } from '../../services/api.js';
+import { runMatching, createConnection, getSupplierById } from '../../services/api.js';
 
 export default function MatchingView({ initialRequestId = 'request-001' }) {
   const [requestId, setRequestId] = useState(initialRequestId);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [supplierNames, setSupplierNames] = useState({});
+  const [connectingSupplierId, setConnectingSupplierId] = useState('');
 
   const handleRunMatch = async () => {
     setLoading(true);
     setMessage('');
+    setResults([]);
+    setSupplierNames({});
     try {
       const data = await runMatching(requestId);
-      setResults(data.results || []);
+      const nextResults = data.results || [];
+      setResults(nextResults);
+      const supplierDetails = await Promise.allSettled(
+        nextResults.map(({ supplierId }) => getSupplierById(supplierId)),
+      );
+      setSupplierNames(Object.fromEntries(supplierDetails.flatMap((item, index) => (
+        item.status === 'fulfilled' ? [[nextResults[index].supplierId, item.value.companyName]] : []
+      ))));
+      if (nextResults.length === 0) setMessage('Chưa tìm thấy nhà cung cấp phù hợp.');
     } catch (err) {
       setMessage(`Lỗi: ${err.userMessage || err.message}`);
     } finally {
@@ -21,15 +33,19 @@ export default function MatchingView({ initialRequestId = 'request-001' }) {
   };
 
   const handleConnect = async (supplierId) => {
+    setConnectingSupplierId(supplierId);
+    setMessage('');
     try {
       await createConnection({
         requestId,
         buyerId: 'buyer-001',
         supplierId,
       });
-      alert(`Đã gửi yêu cầu kết nối thành công tới ${supplierId}!`);
+      setMessage(`Đã gửi yêu cầu kết nối tới ${supplierNames[supplierId] || supplierId}. Mở mục Connections để xem trạng thái.`);
     } catch (err) {
-      alert(`Lỗi kết nối: ${err.userMessage || err.message}`);
+      setMessage(`Không thể gửi yêu cầu kết nối: ${err.userMessage || err.message}`);
+    } finally {
+      setConnectingSupplierId('');
     }
   };
 
@@ -51,7 +67,11 @@ export default function MatchingView({ initialRequestId = 'request-001' }) {
         </button>
       </div>
 
-      {message && <p style={{ color: 'red', marginTop: '12px' }}>{message}</p>}
+      {message && (
+        <p role="status" style={{ color: message.startsWith('Đã gửi') ? '#166534' : '#b91c1c', marginTop: '12px' }}>
+          {message}
+        </p>
+      )}
 
       <div style={{ marginTop: '20px' }}>
         {results.map((r, index) => (
@@ -59,7 +79,8 @@ export default function MatchingView({ initialRequestId = 'request-001' }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <span className="phase-pill">Top #{index + 1}</span>
-                <h3 style={{ display: 'inline', marginLeft: '8px' }}>{r.supplierId}</h3>
+                <h3 style={{ display: 'inline', marginLeft: '8px' }}>{supplierNames[r.supplierId] || r.supplierId}</h3>
+                <small style={{ display: 'block', color: '#64748b', marginTop: '4px' }}>{r.supplierId}</small>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontSize: '24px', fontWeight: 'bold' }}>{r.score}</span>
@@ -89,8 +110,9 @@ export default function MatchingView({ initialRequestId = 'request-001' }) {
               className="btn btn-outline"
               style={{ marginTop: '8px' }}
               onClick={() => handleConnect(r.supplierId)}
+              disabled={connectingSupplierId !== ''}
             >
-              🤝 Gửi Connection Request
+              {connectingSupplierId === r.supplierId ? 'Đang gửi...' : '🤝 Gửi Connection Request'}
             </button>
           </div>
         ))}
