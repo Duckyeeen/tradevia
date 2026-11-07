@@ -1,24 +1,53 @@
 # TRADEVIA
 
-TRADEVIA là demo marketplace B2B giúp doanh nghiệp khám phá nhà cung cấp, mô tả nhu cầu và xem kết quả matching. Dự án phục vụ đồ án môn Kỹ thuật Thương mại Điện tử và chạy trên máy cá nhân.
+> A B2B marketplace demo that helps businesses discover suppliers, describe their needs, and evaluate partner fit using explainable matching.
 
-## Trạng thái hiện tại
+TRADEVIA is a project for the Electronic Commerce Engineering course, designed to run locally. The repository currently has no screenshots, `LICENSE` file, or official release, so this README does not include placeholder images or unverified license/version badges.
 
-- Frontend: React + Vite, có các màn hình demo Account, Feed, Supplier Profile, Buyer Request, Matching và Connections.
-- Backend: Node.js + Express, cung cấp 8 API cho health, suppliers, requests, matching và connections.
-- Matching: thuật toán rule-based có giải thích điểm theo 6 tiêu chí; không dùng AI hoặc dịch vụ ngoài.
-- Dữ liệu backend: lưu trong các file JSON tại `server/data/`.
-- API adapter phía client hỗ trợ `auto`, `live` và `mock`. Mặc định `auto` sẽ chuyển sang dữ liệu mock khi backend không truy cập được. Dữ liệu mock chỉ nằm trong bộ nhớ trình duyệt và được tạo lại khi tải lại trang.
+## Overview
 
-Đây là demo MVP. Mock login không xác thực người dùng thật; account và bài đăng chưa được lưu qua backend API.
+The demo flow is:
 
-## Yêu cầu
+```text
+Choose a demo account → Feed → Supplier Profile → Buyer Request
+→ Matching Results → Connection Request
+```
 
-- Node.js bản LTS và npm. Cả nhóm nên dùng cùng major version Node.js.
+The frontend includes demo screens for Account, Feed, Supplier Profile, Buyer Request, Matching, and Connections. The backend provides eight APIs for health, suppliers, requests, matching, and connections. Matching uses deterministic rules and returns an overall score, a criteria breakdown, and `missingData`.
+
+### Current Status and Limitations
+
+- Suppliers, Buyer Requests, and Connections are read from and written to JSON files in `server/data/`.
+- The frontend API adapter supports `auto`, `live`, and `mock` modes. By default, `auto` falls back to mock data when the backend cannot be reached.
+- Client-side mock data is stored in memory and is reset when the page reloads.
+- Login is a mock flow; it does not authenticate real users.
+- Accounts and posts are not persisted through the backend API.
+- Payments, real-time chat, external business verification, and cloud deployment are not implemented.
+
+## Screenshots
+
+The repository does not currently contain demo screenshots. Add real screenshots to `docs/screenshots/` after the team finalizes the interface, then embed them here.
+
+## Tech Stack
+
+| Area | Technology |
+|---|---|
+| Frontend | React 19, Vite 6 |
+| Backend | Node.js, Express 4 |
+| Demo data storage | JSON files |
+| Matching | Rule-based JavaScript; no AI or external APIs |
+| Tests | Node.js built-in test runner (`node:test`) |
+| Version control | Git, GitHub |
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js LTS and npm. The team should use the same Node.js major version.
 - Git.
-- Chrome hoặc Edge để kiểm tra giao diện.
+- Chrome or Edge for checking the interface.
 
-Kiểm tra cài đặt:
+Verify your installation:
 
 ```sh
 git --version
@@ -26,11 +55,18 @@ node --version
 npm --version
 ```
 
-## Cài đặt và chạy
+### Clone the Repository
 
-Mở hai terminal tại thư mục gốc của repo `tradevia/`.
+```sh
+git clone https://github.com/Duckyeeen/tradevia.git
+cd tradevia
+```
 
-Terminal 1 — chạy backend:
+The following steps work in macOS Terminal, Windows PowerShell, and Command Prompt. Open two terminals in the `tradevia/` repository directory.
+
+### Install Dependencies and Run the Backend
+
+Terminal 1:
 
 ```sh
 cd server
@@ -38,9 +74,11 @@ npm install
 npm run dev
 ```
 
-Backend mặc định chạy tại `http://localhost:3000`. Giữ terminal này mở.
+The backend runs at `http://localhost:3000` by default. Keep this terminal open.
 
-Terminal 2 — chạy frontend:
+### Install Dependencies and Run the Frontend
+
+Terminal 2:
 
 ```sh
 cd client
@@ -48,13 +86,27 @@ npm install
 npm run dev
 ```
 
-Mở địa chỉ Vite in trong terminal, mặc định là `http://localhost:5173`. Vite chuyển tiếp đường dẫn `/api` đến backend tại `http://127.0.0.1:3000`.
+Open the Vite URL printed in the terminal, usually `http://localhost:5173`. Vite proxies `/api` requests to the backend at `http://127.0.0.1:3000`.
 
-Các lệnh `cd`, `npm install` và `npm run dev` dùng được trong macOS Terminal, Windows PowerShell và Command Prompt. Sau khi sửa `package.json` của một phần, chạy lại `npm install` trong đúng thư mục đó.
+Run `npm install` once in each directory after cloning. If that directory's `package.json` changes, run the install command again from that directory.
 
-### Cấu hình tùy chọn
+### Optional Configuration
 
-Mặc định không cần tạo file `.env`. Nếu muốn đổi cổng proxy hoặc chế độ dữ liệu, sao chép `client/.env.example` thành `client/.env`, rồi chỉnh các giá trị:
+You do not need a `.env` file by default. To change the API mode or proxy target, copy `client/.env.example` to `client/.env`.
+
+macOS:
+
+```sh
+cp client/.env.example client/.env
+```
+
+Windows PowerShell:
+
+```powershell
+Copy-Item client/.env.example client/.env
+```
+
+Available values:
 
 ```dotenv
 VITE_API_MODE=auto
@@ -62,79 +114,90 @@ VITE_API_PROXY_TARGET=http://127.0.0.1:3000
 VITE_API_TIMEOUT_MS=8000
 ```
 
-- `auto`: ưu tiên backend thật; tự chuyển sang mock khi backend không phản hồi.
-- `live`: chỉ dùng backend thật; báo lỗi nếu backend không chạy.
-- `mock`: luôn dùng dữ liệu mock.
+- `auto`: use the real backend and fall back to mock data if the backend is unreachable.
+- `live`: use only the real backend and return an error if it cannot be reached.
+- `mock`: always use mock data in the browser.
 
-Sau khi đổi `.env`, khởi động lại Vite. Không commit file `.env`.
+Restart Vite after changing `.env`. Do not commit `client/.env`.
 
-## Kiểm tra
+## Tests and Build
 
-Chạy unit test matching và backend:
+Run the backend and matching unit tests:
 
 ```sh
 cd server
 npm test
 ```
 
-Chạy test API adapter frontend:
+Run the frontend API adapter tests:
 
 ```sh
 cd client
 npm test
 ```
 
-Build frontend:
+Build the frontend:
 
 ```sh
 cd client
 npm run build
 ```
 
-Kiểm tra nhanh backend bằng trình duyệt tại `http://localhost:3000/api/health`. Kết quả bình thường có dạng:
+Check the backend at `http://localhost:3000/api/health`. A successful response looks like:
 
 ```json
 {"status":"ok","service":"tradevia-api"}
 ```
 
-## API hiện có
+## API
 
-| Method | Endpoint | Mục đích |
+| Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/api/health` | Kiểm tra backend |
-| `GET` | `/api/suppliers` | Danh sách supplier; hỗ trợ `?tag=electronics` |
-| `GET` | `/api/suppliers/:id` | Chi tiết supplier |
-| `GET` | `/api/requests` | Danh sách Buyer Request |
-| `POST` | `/api/requests` | Tạo Buyer Request |
-| `POST` | `/api/matching` | Matching theo `{ "requestId": "request-001" }` |
-| `GET` | `/api/connections` | Danh sách connection; có thể lọc bằng `buyerId` hoặc `supplierId` |
-| `POST` | `/api/connections` | Tạo connection theo `requestId`, `buyerId`, `supplierId` |
+| `GET` | `/api/health` | Check backend status |
+| `GET` | `/api/suppliers` | List suppliers; supports `?tag=electronics` |
+| `GET` | `/api/suppliers/:id` | Get supplier details |
+| `GET` | `/api/requests` | List Buyer Requests |
+| `POST` | `/api/requests` | Create a Buyer Request |
+| `POST` | `/api/matching` | Run matching with `{ "requestId": "request-001" }` |
+| `GET` | `/api/connections` | List connections; filter by `buyerId` or `supplierId` |
+| `POST` | `/api/connections` | Create a connection with `requestId`, `buyerId`, and `supplierId` |
 
-Các field và quy tắc matching chi tiết nằm trong [TRADEVIA_CODEX_STARTER.md](TRADEVIA_CODEX_STARTER.md).
+Matching returns an overall score from 0 to 100, a breakdown across six criteria, and a list of missing data:
 
-## Cấu trúc thư mục
+| Criterion | Weight |
+|---|---:|
+| Industry tags | 25% |
+| Services / capabilities | 25% |
+| Capacity | 20% |
+| Location | 10% |
+| Compliance / certifications | 10% |
+| Business model | 10% |
+
+See [TRADEVIA_CODEX_STARTER.md](TRADEVIA_CODEX_STARTER.md) for the detailed data contract and matching rules.
+
+## Repository Structure
 
 ```text
 client/
-  src/modules/       Giao diện theo module của nhóm
-  src/services/      API client, xử lý lỗi và mock adapter
-  src/data/          Dữ liệu demo phía client
-  tests/             Test API adapter
+  src/modules/       Account, Feed, Supplier, Request, Matching, Connections
+  src/services/      API client, error handling, and mock adapter
+  src/data/          Client-side demo data
+  tests/             API adapter tests
 server/
-  src/services/      Matching rules
-  src/utils/         Chuẩn hóa dữ liệu và đọc/ghi JSON
-  src/tests/         Unit test matching
+  src/services/      Matching rules and criteria configuration
+  src/utils/         Data normalization and JSON file access
+  src/tests/         Matching unit tests
   data/              suppliers.json, requests.json, connections.json
 TRADEVIA_CODEX_STARTER.md
 TRADEVIA_REMAINING_WORK.md
 ```
 
-## Quy tắc làm việc nhóm
+## Team Workflow
 
-- Làm trên branch được phân công; giữ `main` ổn định.
-- Trước khi commit, kiểm tra `git status` và `git diff`.
-- Không commit `node_modules/`, `client/.env`, thông tin đăng nhập hoặc file build `client/dist/`.
-- Thành viên chỉ sửa module mình sở hữu. Trao đổi với Lead Developer trước khi đổi API contract, cấu hình package hoặc file dùng chung.
-- Dùng camelCase nhất quán và cập nhật API contract khi team đồng ý thay đổi schema.
+- Work on your assigned branch and keep `main` stable.
+- Check `git status` and `git diff` before committing.
+- Do not commit `node_modules/`, `client/.env`, credentials, or the frontend build output in `client/dist/`.
+- Keep changes within your assigned module. Coordinate with the Lead Developer before changing the API contract, package configuration, or shared files.
+- Use camelCase consistently and update the contract when the team agrees to a schema change.
 
-Phân công, data contract và checklist nghiệm thu nằm trong [TRADEVIA_REMAINING_WORK.md](TRADEVIA_REMAINING_WORK.md).
+See [TRADEVIA_REMAINING_WORK.md](TRADEVIA_REMAINING_WORK.md) for assignments, module dependencies, and the demo acceptance checklist.
