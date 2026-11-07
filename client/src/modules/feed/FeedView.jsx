@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getSuppliers } from '../../services/api.js';
+import { useCurrentAccount } from '../account/accountStore.js';
 import MOCK_POSTS from './postData.js';
 
 const RECOMMENDED_FILTER = 'recommended';
@@ -31,7 +32,8 @@ function formatDate(dateString) {
   }
 }
 
-export default function FeedView({ onSelectSupplier, industryTags = [] }) {
+export default function FeedView({ onSelectSupplier, industryTags }) {
+  const currentAccount = useCurrentAccount?.() ?? null;
   const [suppliers, setSuppliers] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState(RECOMMENDED_FILTER);
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,9 +42,13 @@ export default function FeedView({ onSelectSupplier, industryTags = [] }) {
   const [reloadKey, setReloadKey] = useState(0);
   const [activeView, setActiveView] = useState(VIEW_POSTS);
 
+  const effectiveTags = Array.isArray(industryTags) && industryTags.length > 0
+    ? industryTags
+    : currentAccount?.industryTags ?? [];
+
   const accountTags = useMemo(
-    () => [...new Set((Array.isArray(industryTags) ? industryTags : []).filter(Boolean))],
-    [industryTags],
+    () => [...new Set((Array.isArray(effectiveTags) ? effectiveTags : []).filter(Boolean))],
+    [effectiveTags],
   );
 
   // ---------- Load suppliers từ API ----------
