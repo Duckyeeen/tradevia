@@ -22,6 +22,7 @@ function App() {
   const [apiStatus, setApiStatus] = useState(getApiStatus());
   const [selectedSupplierId, setSelectedSupplierId] = useState('supplier-001');
   const [createdRequestId, setCreatedRequestId] = useState('request-001');
+  const [createdRequestBuyerId, setCreatedRequestBuyerId] = useState('buyer-001');
 
   useEffect(() => {
     return subscribeApiStatus((status) => setApiStatus({ ...status }));
@@ -34,6 +35,7 @@ function App() {
 
   const handleRequestCreated = (req) => {
     setCreatedRequestId(req.id);
+    setCreatedRequestBuyerId(req.buyerId || 'buyer-001');
     setActiveTab('matching');
   };
 
@@ -174,7 +176,7 @@ function App() {
       {activeTab === 'feed' && <FeedView onSelectSupplier={handleSelectSupplier} />}
       {activeTab === 'supplier' && <SupplierDetailView supplierId={selectedSupplierId} />}
       {activeTab === 'request' && <CreateRequestView onRequestCreated={handleRequestCreated} />}
-      {activeTab === 'matching' && <MatchingView initialRequestId={createdRequestId} />}
+      {activeTab === 'matching' && <MatchingView initialRequestId={createdRequestId} buyerId={createdRequestBuyerId} />}
       {activeTab === 'connections' && <ConnectionListView />}
 
       <footer className="footer">

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { runMatching, createConnection } from '../../services/api.js';
 
-export default function MatchingView({ initialRequestId = 'request-001' }) {
+export default function MatchingView({ initialRequestId = 'request-001', buyerId = 'buyer-001' }) {
   const [requestId, setRequestId] = useState(initialRequestId);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,7 @@ export default function MatchingView({ initialRequestId = 'request-001' }) {
     try {
       await createConnection({
         requestId,
-        buyerId: 'buyer-001',
+        buyerId,
         supplierId,
       });
       alert(`Đã gửi yêu cầu kết nối thành công tới ${supplierId}!`);

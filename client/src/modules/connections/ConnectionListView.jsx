@@ -1,17 +1,27 @@
 import { useState, useEffect } from 'react';
 import { getConnections } from '../../services/api.js';
+import { useCurrentAccount } from '../account/accountStore.js';
 
 export default function ConnectionListView() {
+  const currentAccount = useCurrentAccount();
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    let active = true;
     setLoading(true);
-    getConnections()
-      .then((data) => setConnections(data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
+    setError('');
+    getConnections(currentAccount?.id ? { buyerId: currentAccount.id } : {})
+      .then((data) => { if (active) setConnections(data); })
+      .catch((err) => {
+        if (!active) return;
+        setConnections([]);
+        setError(err.userMessage || err.message || 'Không tải được danh sách kết nối.');
+      })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [currentAccount?.id]);
 
   return (
     <div className="module-container">
@@ -20,6 +30,8 @@ export default function ConnectionListView() {
 
       {loading ? (
         <p>Đang tải danh sách kết nối...</p>
+      ) : error ? (
+        <div className="card" role="alert">{error}</div>
       ) : connections.length === 0 ? (
         <div className="card">
           <p>Chưa có yêu cầu kết nối nào được tạo.</p>

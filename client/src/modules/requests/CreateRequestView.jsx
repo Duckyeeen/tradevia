@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createRequest } from '../../services/api.js';
+import { useCurrentAccount } from '../account/accountStore.js';
+import { buildBuyerRequestPayload } from './requestPayload.js';
 
 export default function CreateRequestView({ onRequestCreated }) {
+  const currentAccount = useCurrentAccount();
   const [formData, setFormData] = useState({
     title: 'Tìm đối tác gia công bản mạch IoT',
     description: 'Cần tìm nhà sản xuất linh kiện và lắp ráp SMT tại Việt Nam.',
-    industryTags: 'electronics, manufacturing',
+    industryTags: (currentAccount?.industryTags ?? []).join(', '),
     requiredServices: 'contract manufacturing, sourcing',
     desiredCapacity: 'medium',
     location: 'Vietnam',
@@ -14,21 +17,18 @@ export default function CreateRequestView({ onRequestCreated }) {
   });
   const [status, setStatus] = useState('');
 
+  useEffect(() => {
+    setFormData((previous) => ({
+      ...previous,
+      industryTags: (currentAccount?.industryTags ?? []).join(', '),
+    }));
+  }, [currentAccount?.id, currentAccount?.industryTags]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('Đang gửi...');
     try {
-      const payload = {
-        buyerId: 'buyer-001',
-        title: formData.title,
-        description: formData.description,
-        industryTags: formData.industryTags.split(',').map((t) => t.trim()).filter(Boolean),
-        requiredServices: formData.requiredServices.split(',').map((s) => s.trim()).filter(Boolean),
-        desiredCapacity: formData.desiredCapacity,
-        location: formData.location,
-        complianceRequirements: formData.complianceRequirements ? [formData.complianceRequirements.trim()] : [],
-        businessModel: formData.businessModel,
-      };
+      const payload = buildBuyerRequestPayload(formData, currentAccount);
       const res = await createRequest(payload);
       setStatus(`Tạo thành công! ID: ${res.id}`);
       if (onRequestCreated) onRequestCreated(res);
@@ -41,6 +41,11 @@ export default function CreateRequestView({ onRequestCreated }) {
     <div className="module-container">
       <h2>Tạo Yêu cầu Tìm đối tác (Buyer Request)</h2>
       <p className="module-desc">Phụ trách: Thành viên 4 · Nhánh: <code>feature/supplier-request</code></p>
+      {currentAccount && (
+        <p className="module-desc">
+          Tạo yêu cầu với {currentAccount.displayName} ({currentAccount.id}); industry tags được lấy từ tài khoản hiện tại.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div>
