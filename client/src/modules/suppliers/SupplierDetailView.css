@@ -1,0 +1,25 @@
+.supplier-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.supplier-heading .module-desc { margin: 4px 0 0; }
+.supplier-profile-heading { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.supplier-profile-heading h3 { margin: 0 0 4px; color: #263d35; }
+.supplier-id { color: var(--muted, #788984); font-size: 11px; }
+.supplier-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 24px; margin: 0 0 18px; }
+.supplier-facts dt { color: #60716b; font-size: 12px; font-weight: 700; }
+.supplier-facts dd { margin: 4px 0 0; font-size: 13px; }
+.supplier-section { margin-top: 18px; }
+.supplier-section h3 { margin-bottom: 7px; color: #344b42; font-size: 14px; }
+.supplier-description { margin: 0; color: #344b42; font-size: 13px; line-height: 1.7; white-space: pre-line; }
+.supplier-list, .supplier-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.supplier-tags .tag-pill { cursor: default; }
+.certification-pill { border-color: #bbf7d0; background: #f0fdf4; color: #166534; cursor: default; }
+.supplier-services { margin: 0; padding-left: 20px; font-size: 13px; }
+.supplier-services li + li { margin-top: 4px; }
+.supplier-empty { margin: 0; color: var(--muted, #788984); font-size: 13px; font-style: italic; }
+.supplier-state-message { color: #60716b; font-size: 13px; line-height: 1.6; }
+.supplier-state-message[role='alert'] { color: #b42318; }
+.supplier-cta { padding-top: 16px; margin-top: 18px; border-top: 1px solid var(--line, #e4eae5); }
+
+@media (max-width: 640px) {
+  .supplier-heading { align-items: flex-start; flex-direction: column; }
+  .supplier-heading > button { width: 100%; }
+}
